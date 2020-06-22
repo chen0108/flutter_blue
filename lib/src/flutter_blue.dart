@@ -42,6 +42,9 @@ class FlutterBlue {
   BehaviorSubject<List<ScanResult>> _scanResults = BehaviorSubject.seeded([]);
   Stream<List<ScanResult>> get scanResults => _scanResults.stream;
 
+  BehaviorSubject<ScanResult> _updateResult = BehaviorSubject.seeded(ScanResult());
+  Stream<ScanResult> get updateResult => _updateResult.stream;
+
   PublishSubject _stopScanPill = new PublishSubject();
 
   /// Gets the current state of the Bluetooth module
@@ -63,7 +66,13 @@ class FlutterBlue {
         .invokeMethod('getConnectedDevices')
         .then((buffer) => protos.ConnectedDevicesResponse.fromBuffer(buffer))
         .then((p) => p.devices)
-        .then((p) => p.map((d) => BluetoothDevice.fromProto(d)).toList());
+        .then((p) {
+          return p.map((d) {
+            BluetoothDevice device = BluetoothDevice.fromProto(d);
+            _updateResult.add(ScanResult(device: device));
+            return device;
+          }).toList();
+        });
   }
 
   _setLogLevelIfAvailable() async {
@@ -127,6 +136,7 @@ class FlutterBlue {
       } else {
         list.add(result);
       }
+      _updateResult.add(result);
       _scanResults.add(list);
       return result;
     });
