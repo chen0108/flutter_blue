@@ -42,7 +42,7 @@ class FlutterBlue {
   BehaviorSubject<List<ScanResult>> _scanResults = BehaviorSubject.seeded([]);
   Stream<List<ScanResult>> get scanResults => _scanResults.stream;
 
-  BehaviorSubject<ScanResult> _updateResult = BehaviorSubject.seeded(ScanResult());
+  BehaviorSubject<ScanResult> _updateResult = BehaviorSubject();
   Stream<ScanResult> get updateResult => _updateResult.stream;
 
   PublishSubject _stopScanPill = new PublishSubject();
